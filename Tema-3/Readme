@@ -1,0 +1,50 @@
+						Tema 3 - APD
+							Jorascu Marian Vladut 335CC
+							
+							
+							
+Functia readInput primeste ca argument numele fisierului , si o variabila
+in care trebuie retinuta imaginea . Pentru inceput citesc linie cu linie
+(3 astfel de citiri). Dupa care parsez datele : pentru prima linie
+completez in variabila de tip image , campul type in functie de dipul imaginii.
+De pe linia a doua extrag dimensiunile , iar de pe linia 3 valoarea maxima.
+Apoi conform cu  tipul imaginii , se aloca campul corespunzator (
+mat_col sau mat_gray) . Cand citesc efectiv bitii , citesc cate o linie
+la fiecare pas ( nu pixel cu pixel ). 
+
+Functia writeData  scrie in fisierul de output , noua imagine obitnuta dupa
+aplicarea filtrelor
+
+
+Functia gaseste_filtru : primeste ca parametrii numele filtrului , si un pointer
+la o matrice alocata dinamic ce va avea valorile filtrului.
+
+Indiferent de tipul imaginii ordinea operatiilor pe care le efectuez
+pentru realizarea cerintei 
+este aceeasi.Voi explica cum am realizat tema pentru imaginile grayscale
+, iar singura diferenta comparativ cu imaginile color este urmatoarea : 
+deoarece fiecare pixel are 3 componente ( r g b ) voi mai creea inca 3
+imagini , iar in campul graascyale al acestor imagini ( im1, im2 , im3)
+voi stoca pixelii r g b , din imaginea color (vor circula de 3 ori mai multe 
+date pe canalul de comunicare) + trebuie sa copiez valorile din imaginea rgb
+in imaginile grascyale , si operatia inversa ( la final inainte sa apelez
+functia de scriere).
+
+OBS:Am utilizat Ssend conform cu indicatiile de pe forum ( acolo unde a 
+fost posibila utilizarea acestora)
+
+Rezolvarea pentru grayscale : Pentru inceput citesc in firul de executie
+cu id-ul 0 , imaginea. Dupa care trimit la toate celelalte fire de executie
+dimensiunile imaginii , si tipul imaginii. Imaginea este impartita pe linii.
+Daca impartirea nu se realizeaza perfect , liniile in plus sunt prelucrate
+de ultimul thread. Pentru thread-ul ce are ca id-ul 'x' pe langa liniile
+corespunzatoare lui mai trimit si utlima linie din threadul cu id-ul 'x-1' 							
+si prima din thread-ul cu id-ul 'x+1' ( de asemenea acest lucru nu este valabil
+pentru primul si ultimul , deoarece ei nu au cate 2 vecini), deoarece
+sunt necesare in algoritmul de "aplicare al filtrelor". Odata trimisa imaginea
+, fiecare fir de executie "aplica filtrul" pe portiunea din imagine ce ia fost 
+trimisa. Dupa care recompun imaginea in thread-ul cu id-ul 0 . In cazul in care
+nu am terminat de executat toate filtrele , impart din nou imaginea , si reaiau
+operatiile de la "aplicarea filtrelului". 
+Dupa ce am terminat de aplicat filtrele , scriu imaginea tot din thread-ul 
+cu id-ul 0. 
